@@ -1,0 +1,97 @@
+#Bucket to store static website
+
+resource "google_storage_bucket" "website"{
+ name = "example_website_yasaman"
+ location = "US"
+}
+# make the object public
+/*
+resource "google_storage_object_access_control" "public"{
+ bucket = google_storage_bucket.website.name
+ object = google_storage_bucket_object.index.name
+ entity = "allUsers"
+ role = "READER"
+} */
+
+# make the object private by not including the above resource
+
+
+# Upload index.html to the bucket
+resource "google_storage_bucket_object" "index"{
+ name = "index.html"
+ source = "/home/shirdast/playground/terraform-01/website/index.html"
+ bucket = google_storage_bucket.website.name
+}
+
+# create a second bucket for fallout emoji
+resource "google_storage_bucket" "fallout"{
+ name = "example_website_yasaman_fallout"
+ location = "US"
+}
+# upload the fallout emoji to the bucket
+resource "google_storage_bucket_object" "fallout"{
+ name = "fallout.html"
+ source = "/home/shirdast/playground/terraform-01/website/fallout.html"
+ bucket = google_storage_bucket.fallout.name
+}
+
+
+#load balancer
+# Reserve IP address
+resource "google_compute_global_address" "website_ip" {
+  name = "website-ip"
+}
+
+
+# Create LB backend buckets
+resource "google_compute_backend_bucket" "website" {
+  name        = "website"
+  description = "Contains its website"
+  bucket_name = google_storage_bucket.website.name
+}
+
+resource "google_compute_backend_bucket" "fallout" {
+  name        = "fallout"
+  description = "Contains ascii emoji"
+  bucket_name = google_storage_bucket.fallout.name
+}
+
+
+
+# Create url map
+resource "google_compute_url_map" "default" {
+  name = "http-lb"
+
+  default_service = google_compute_backend_bucket.website.id
+
+  host_rule {
+    hosts        = ["*"]
+    path_matcher = "path-matcher-2"
+  }
+  path_matcher {
+    name            = "path-matcher-2"
+    default_service = google_compute_backend_bucket.website.id
+
+    path_rule {
+      paths   = ["fallout/*"]
+      service = google_compute_backend_bucket.fallout.id
+    }
+  }
+}
+
+# Create HTTP target proxy
+resource "google_compute_target_http_proxy" "default" {
+  name    = "http-lb-proxy"
+  url_map = google_compute_url_map.default.id
+}
+
+# Create forwarding rule
+resource "google_compute_global_forwarding_rule" "default" {
+  name                  = "http-lb-forwarding-rule"
+  ip_protocol           = "TCP"
+  load_balancing_scheme = "EXTERNAL_MANAGED"
+  port_range            = "80"
+  target                = google_compute_target_http_proxy.default.id
+  ip_address            = google_compute_global_address.website_ip.id
+}
+

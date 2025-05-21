@@ -1,5 +1,5 @@
-using terraform to build: dns + load balancer + CDN + bucket.
-this configuration will host a static website in GCP.
+using terraform to build: dns + load balancer + CDN + bucket.\n
+This configuration will host a static website in GCP.
 
 
 #important

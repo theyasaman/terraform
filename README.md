@@ -1,7 +1,7 @@
-using terraform to build: dns + load balancer + CDN + bucket.\n
+using terraform to build: dns + load balancer + CDN + bucket.
 This configuration will host a static website in GCP.
 
 
-#important
+##important
 
 need to update the service account ket ( JSON format ) before running the script.

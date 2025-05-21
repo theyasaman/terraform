@@ -95,3 +95,28 @@ resource "google_compute_global_forwarding_rule" "default" {
   ip_address            = google_compute_global_address.website_ip.id
 }
 
+
+
+# Cloud DNS public managed zone
+
+resource "google_dns_managed_zone" "yasaman-shirdast" {
+  name        = "yasaman-shirdast"
+  dns_name    = "yasaman-shirdats.com."
+  description = "Example DNS zone"
+  
+}
+
+resource "random_id" "rnd" {
+  byte_length = 4
+}
+
+# I want to point it to the load balancer frontend IP
+
+resource "google_dns_record_set" "a_record" {
+  managed_zone = google_dns_managed_zone.yasaman-shirdast.name
+  name = "${google_dns_managed_zone.yasaman-shirdast.dns_name}"
+  type         = "A"
+  rrdatas      = [google_compute_global_address.website_ip.address]
+  ttl          = 300
+}
+

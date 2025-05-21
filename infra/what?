@@ -11,3 +11,6 @@ https://cloud.google.com/load-balancing/docs/https/setup-global-ext-https-bucket
 
 
 
+roles to create Cloud DNS:
+
+https://cloud.google.com/dns/docs/access-control#dns.admin

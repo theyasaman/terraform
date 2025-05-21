@@ -96,7 +96,6 @@ resource "google_compute_global_forwarding_rule" "default" {
 }
 
 
-
 # Cloud DNS public managed zone
 
 resource "google_dns_managed_zone" "yasaman-shirdast" {
@@ -119,4 +118,44 @@ resource "google_dns_record_set" "a_record" {
   rrdatas      = [google_compute_global_address.website_ip.address]
   ttl          = 300
 }
+
+
+# backend bucket with CDN enabled
+
+resource "google_compute_backend_bucket" "error_backend"{
+  name = "error_backend"
+  bucket_name = 
+
+}
+
+
+# CDN will server content from a public bucket called error_page
+resource "google_storage_bucket" "construction" {
+ name = "yasaman-shirdats-error-page"
+ location = "US"
+}
+
+resource "google_storage_bucket_object" "error_page_yasaman" {
+  name    = "error_page_html"
+  bucket  = google_storage_bucket.construction.name
+  source = "/home/shirdast/playground/terraform-01/website/error.html"
+}
+
+
+resource "google_compute_backend_bucket" "error_page" {
+  name        = "cat-backend-bucket"
+  description = "simple html to tell that page is under construction"
+  bucket_name = google_storage_bucket.construction.name
+  enable_cdn  = true
+  cdn_policy {
+    cache_mode        = "CACHE_ALL_STATIC"
+    client_ttl        = 3600
+    default_ttl       = 3600
+    max_ttl           = 86400
+    negative_caching  = true
+    serve_while_stale = 86400
+  }
+}
+
+
 

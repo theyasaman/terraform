@@ -19,7 +19,7 @@ resource "google_storage_object_access_control" "public"{
 # Upload index.html to the bucket
 resource "google_storage_bucket_object" "index"{
  name = "index.html"
- source = "/home/shirdast/playground/terraform-01/website/index.html"
+ source = "./website/index.html"
  bucket = google_storage_bucket.website.name
 }
 
@@ -31,7 +31,7 @@ resource "google_storage_bucket" "fallout"{
 # upload the fallout emoji to the bucket
 resource "google_storage_bucket_object" "fallout"{
  name = "fallout.html"
- source = "/home/shirdast/playground/terraform-01/website/fallout.html"
+ source = "./website/fallout.html"
  bucket = google_storage_bucket.fallout.name
 }
 
@@ -100,7 +100,7 @@ resource "google_compute_global_forwarding_rule" "default" {
 
 resource "google_dns_managed_zone" "yasaman-shirdast" {
   name        = "yasaman-shirdast"
-  dns_name    = "yasaman-shirdats.com."
+  dns_name    = "yasaman-shirdast.com."
   description = "Example DNS zone"
   
 }
@@ -138,7 +138,7 @@ resource "google_storage_bucket" "construction" {
 resource "google_storage_bucket_object" "error_page_yasaman" {
   name    = "error_page_html"
   bucket  = google_storage_bucket.construction.name
-  source = "/home/shirdast/playground/terraform-01/website/error.html"
+  source = "./website/error.html"
 }
 
 

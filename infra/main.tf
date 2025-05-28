@@ -57,28 +57,6 @@ resource "google_compute_backend_bucket" "fallout" {
 }
 
 
-
-# Create url map
-resource "google_compute_url_map" "default" {
-  name = "http-lb"
-
-  default_service = google_compute_backend_bucket.website.id
-
-  host_rule {
-    hosts        = ["*"]
-    path_matcher = "path-matcher-2"
-  }
-  path_matcher {
-    name            = "path-matcher-2"
-    default_service = google_compute_backend_bucket.website.id
-
-    path_rule {
-      paths   = ["fallout/*"]
-      service = google_compute_backend_bucket.fallout.id
-    }
-  }
-}
-
 # Create HTTP target proxy
 resource "google_compute_target_http_proxy" "default" {
   name    = "http-lb-proxy"
@@ -120,15 +98,6 @@ resource "google_dns_record_set" "a_record" {
 }
 
 
-# backend bucket with CDN enabled
-
-resource "google_compute_backend_bucket" "error_backend"{
-  name = "error_backend"
-  bucket_name = 
-
-}
-
-
 # CDN will server content from a public bucket called error_page
 resource "google_storage_bucket" "construction" {
  name = "yasaman-shirdats-error-page"
@@ -159,3 +128,27 @@ resource "google_compute_backend_bucket" "error_page" {
 
 
 
+
+# Create url map
+resource "google_compute_url_map" "default" {
+  name = "http-lb"
+
+  default_service = google_compute_backend_bucket.website.self_link
+
+  host_rule {
+    hosts        = ["/home"]
+    path_matcher = "path-matcher-1"
+  }
+
+  path_matcher {
+    name            = "path-matcher-1"
+    default_service = google_compute_backend_bucket.website.id
+
+    path_rule {
+      paths   = ["fallout/*"]
+      service = google_compute_backend_bucket.fallout.id
+    }
+  }
+  
+
+}

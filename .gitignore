@@ -2,4 +2,5 @@ infra/terraform.tfstate
 infra/terraform.tfstate.backup
 service-account-key.json
 infra/.terraform.lock.hcl
+infra/terraform.tfvars
 infra/.terraform/*

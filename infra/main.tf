@@ -1,19 +1,19 @@
-#Bucket to store static website
+# Bucket to store static website
 
 resource "google_storage_bucket" "website"{
  name = "example_website_yasaman"
+ # Bucket name needs to be unique
  location = "US"
 }
 # make the object public
-/*
 resource "google_storage_object_access_control" "public"{
  bucket = google_storage_bucket.website.name
  object = google_storage_bucket_object.index.name
  entity = "allUsers"
  role = "READER"
-} */
+} 
 
-# make the object private by not including the above resource
+# Make the object private by not including the above resource. Private buckets are not reachable from external LB.
 
 
 # Upload index.html to the bucket
@@ -23,12 +23,12 @@ resource "google_storage_bucket_object" "index"{
  bucket = google_storage_bucket.website.name
 }
 
-# create a second bucket for fallout emoji
+# Create a second bucket for fallout emoji
 resource "google_storage_bucket" "fallout"{
  name = "example_website_yasaman_fallout"
  location = "US"
 }
-# upload the fallout emoji to the bucket
+# Upload the fallout emoji to the bucket
 resource "google_storage_bucket_object" "fallout"{
  name = "fallout.html"
  source = "./website/fallout.html"
@@ -36,7 +36,8 @@ resource "google_storage_bucket_object" "fallout"{
 }
 
 
-#load balancer
+# Create a load balancer
+
 # Reserve IP address
 resource "google_compute_global_address" "website_ip" {
   name = "website-ip"
@@ -77,9 +78,10 @@ resource "google_compute_global_forwarding_rule" "default" {
 # Cloud DNS public managed zone
 
 resource "google_dns_managed_zone" "yasaman-shirdast" {
-  name        = "yasaman-shirdast"
+  # This name should be globally unique
+  name        = "yasaman-shirdast-${random_id.rnd.hex}"
   dns_name    = "yasaman-shirdast.com."
-  description = "Example DNS zone"
+  description = "DNS zone for yasaman-shirdast.com"
   
 }
 
@@ -136,7 +138,7 @@ resource "google_compute_url_map" "default" {
   default_service = google_compute_backend_bucket.website.self_link
 
   host_rule {
-    hosts        = ["/home"]
+    hosts        = ["yasaman-shirdast.com"]
     path_matcher = "path-matcher-1"
   }
 

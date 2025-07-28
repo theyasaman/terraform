@@ -89,7 +89,7 @@ resource "random_id" "rnd" {
   byte_length = 4
 }
 
-# I want to point it to the load balancer frontend IP
+# A record for to attach the LB IP to the hostname
 
 resource "google_dns_record_set" "a_record" {
   managed_zone = google_dns_managed_zone.yasaman-shirdast.name
@@ -147,7 +147,7 @@ resource "google_compute_url_map" "default" {
     default_service = google_compute_backend_bucket.website.id
 
     path_rule {
-      paths   = ["fallout/*"]
+      paths   = ["fallout*"]
       service = google_compute_backend_bucket.fallout.id
     }
   }
